@@ -1,7 +1,6 @@
 package server
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -18,7 +17,7 @@ func writeError(w http.ResponseWriter, r *http.Request, err error) {
 	resp := ErrorResponse{
 		Error:     err.Error(),
 		Code:      string(code),
-		RequestID: requestIDFromContext(context.Background()),
+		RequestID: requestIDFromContext(r.Context()),
 	}
 	if errors.Is(err, domain.ErrInvalidState) {
 		resp.Code = string(apperr.CodeInvalidState)
@@ -68,6 +67,6 @@ func writeValidation(w http.ResponseWriter, r *http.Request, msg string) {
 	writeJSON(w, http.StatusBadRequest, ErrorResponse{
 		Error:     msg,
 		Code:      string(apperr.CodeValidationFailed),
-		RequestID: requestIDFromContext(context.Background()),
+		RequestID: requestIDFromContext(r.Context()),
 	})
 }
